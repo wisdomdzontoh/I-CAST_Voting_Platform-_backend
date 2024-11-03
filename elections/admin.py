@@ -22,7 +22,7 @@ class SubscriptionPlanAdmin(admin.ModelAdmin):
 # Registering Organization model
 @admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'phone_number', 'website')
+    list_display = ('name', 'email', 'website', 'type')
     search_fields = ('name', 'email', 'phone_number')
 
 # Registering VotingSession model

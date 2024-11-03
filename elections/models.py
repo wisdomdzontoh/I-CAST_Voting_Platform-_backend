@@ -25,6 +25,7 @@ class SubscriptionPlan(models.Model):
 class Organization(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="organization")
     name = models.CharField(max_length=255)
+    type = models.CharField(max_length=255, default=None)
     email = models.EmailField(max_length=255)
     address = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
