@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
@@ -5,7 +6,7 @@ from django.utils.text import slugify
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 class BaseModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=datetime.datetime.now)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_created', null=True, blank=True)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_updated', null=True, blank=True)
@@ -22,10 +23,10 @@ class SubscriptionPlan(models.Model):
     def __str__(self):
         return self.name
 
-class Organization(models.Model):
+class Organization(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="organization")
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=255, default=None)
+    organization_type = models.CharField(max_length=255, default=None)
     email = models.EmailField(max_length=255)
     address = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
@@ -61,6 +62,10 @@ class VotingSession(models.Model):
 
     def __str__(self):
         return f"{self.session_title} - {self.unique_id}"
+    
+    def can_create_session(self):
+        """Check if the organization can create another session."""
+        return self.sessions.count() < self.subscription_plan.max_sessions
 
 class Position(BaseModel):
     session = models.ForeignKey(VotingSession, on_delete=models.CASCADE, related_name="positions")
